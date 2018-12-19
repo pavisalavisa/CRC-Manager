@@ -11,7 +11,7 @@ namespace CRC
 
         public BinaryPolinomial(params int[] values)
         {
-            Degree = GetPolynomialDegreeFromArray(values); 
+            Degree = GetPolynomialDegreeFromArray(values);
             InitializeListFromArray(values);
         }
 
@@ -24,8 +24,9 @@ namespace CRC
         public void Append(BinaryPolinomial polinomial)
         {
             //Move original value |polinomial| times to the left.
-            LeftShift(polinomial.Degree+1);
-            //append those bits
+            LeftShift(polinomial.Degree + 1);
+
+            //Append those bits
             polinomial.Value.ForEach(x => { this.Value.First(y => y.Position == x.Position).Value = x.Value; });
         }
 
@@ -36,42 +37,63 @@ namespace CRC
 
             for (var i = 0; i < steps; i++)
             {
-                Value.Add(new BinaryPolynomialMember(i,0));
+                Value.Add(new BinaryPolynomialMember(i, 0));
             }
         }
 
         public BinaryPolinomial GetDivisionRemainder(BinaryPolinomial polynomial)
         {
-            if (polynomial.Degree > Degree)
+            var generatingPolynomial = polynomial.Value.Select(x => x.Value).ToArray();
+            var leadingMemberIndex = 0;
+            var batchSize = polynomial.Degree+1;
+            var initialPolynomial = this.Value.Select(x => x.Value).ToArray();
+
+            while (leadingMemberIndex + batchSize <= Degree+1)//jos uvik ima bitova
             {
-                return new BinaryPolinomial(this);
+                var j = 0;
+                for (var i = leadingMemberIndex; i < leadingMemberIndex + batchSize; i++)
+                {
+                    initialPolynomial[i] = (initialPolynomial[i] + generatingPolynomial[j++]) % 2;//xor vrijednosti
+                }
+                leadingMemberIndex = GetNextLeadingMemberIndex(initialPolynomial);
+                if (leadingMemberIndex == -1)//No more leading 1 => we're done
+                {
+                    return new BinaryPolinomial(0);
+                }
             }
-
-            //var initialKBits = new List<BinaryPolynomialMember>();
-            //for (var i = 0; i < polynomial.Degree; i++)
-            //{
-            //    if (Value.Any(x => x.Position == Degree - i))
-            //    {
-            //        initialKBits.Add(new BinaryPolynomialMember());
-            //    }
-            //}
-            //var initialKBits = Value.GetRange(0, polynomial.Degree);
-            ////uzmi prvih k bitova
-            ////xoraj ih s polinomom
-            ////uzmi bitove s desna ako ih ima dovoljno
-            ////uzmi iducih k bitova
-            ////
-            //while (GetNextKBits()==polynomial.Degree)
-            //    //xor next polynomial.degree bits
-
-            //for (var i = 0; i < Degree; i++)
-            //{
-
-            //}
-            return null;
+            return new BinaryPolinomial(TrimHeadingZeros(initialPolynomial));
         }
 
-       
+        private int[] TrimHeadingZeros(int[] polynomial)
+        {
+            var index = -1;
+            for (var i = 0; i < polynomial.Length; i++)
+            {
+                if (polynomial[i] != 0)
+                {
+                    index = i;
+                    break;
+                }
+            }
+            var polynomialList = polynomial.ToList();
+            polynomialList.RemoveRange(0,index);
+
+            return polynomialList.ToArray();
+        }
+
+
+        private int GetNextLeadingMemberIndex(int[] initialPolynomial)
+        {
+            for (var i = 0; i < initialPolynomial.Length; i++)
+            {
+                if (initialPolynomial[i] == 1)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
 
         private int GetPolynomialDegreeFromArray(int[] values)
         {

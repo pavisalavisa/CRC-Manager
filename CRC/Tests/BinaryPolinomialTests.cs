@@ -105,10 +105,16 @@ namespace CRC.Tests
             originalPolynomial.Should().BeEquivalentTo(expectedPolynomial);
         }
 
-        [TestCase]
-        public void GetDivisionRemainder_ShouldReturnCorrectRemainder()
+        [TestCase(new[] { 1, 0, 1, 1 }, new[] { 1, 1, 1})]
+        [TestCase(new[] { 1, 0, 1 }, new[] { 1, 0})]
+        [TestCase(new[] { 1, 0  }, new[] { 0})]
+        [TestCase(new[] { 1, 0,1,1,1,1,1,0,0  }, new[] { 1, 0, 1, 1, 1, 1, 0, 0 })]
+        public void GetDivisionRemainder_ShouldReturnCorrectRemainder(int[] divisor,int[] expected)
         {
-
+            var originalPolynomial = new BinaryPolinomial(1, 0, 1, 1,1,1,0,0);
+            var divisorPolynomial=new BinaryPolinomial(divisor);
+            var expectedPolynomial = new BinaryPolinomial(expected);
+            originalPolynomial.GetDivisionRemainder(divisorPolynomial).Should().BeEquivalentTo(expectedPolynomial);
         }
     }
 }
