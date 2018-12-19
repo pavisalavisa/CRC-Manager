@@ -48,8 +48,10 @@ namespace CRC.Tests
             var polynomial = new BinaryPolinomial(polynomialValues);
             var expectedPolynomial = new List<BinaryPolynomialMember>()
             {
-                new BinaryPolynomialMember(2),
-                new BinaryPolynomialMember(1)
+                new BinaryPolynomialMember(3, 0),
+                new BinaryPolynomialMember(2, 1),
+                new BinaryPolynomialMember(1, 1),
+                new BinaryPolynomialMember(0, 0)
             };
 
             polynomial.Value.Should().BeEquivalentTo(expectedPolynomial);
@@ -91,7 +93,7 @@ namespace CRC.Tests
 
         [TestCase(new[] { 1, 0, 1 }, new[] {1,0,1,1,1,0,1})]
         [TestCase(new[] { 1,0,1, 0, 1 }, new[] {1,0,1,1,1,0,1,0,1})]
-        [TestCase(new[] { 0, 1 }, new[] {1,0,1,1,1})]
+        [TestCase(new[] { 0, 1 }, new[] {1,0,1,0,1})]
         public void Append_ShouldAppendPolynomial(int[] polynomialToAppendValues,int[] expectedPolynomialValues)
         {
             var originalPolynomial = new BinaryPolinomial(1, 0, 1, 1);
