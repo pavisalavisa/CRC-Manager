@@ -58,6 +58,8 @@
     <Compile Include="BinaryPolynomial.cs" />
     <Compile Include="BinaryPolynomialMember.cs" />
     <Compile Include="CyclicRedundancyCheckManager.cs" />
+    <Compile Include="DecimalPolynomial.cs" />
+    <Compile Include="DecimalPolynomialMember.cs" />
     <Compile Include="ICyclicRedundancyCheckManager.cs" />
     <Compile Include="PolynomialDivisionResult.cs" />
     <Compile Include="Program.cs" />
