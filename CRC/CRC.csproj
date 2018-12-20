@@ -59,6 +59,7 @@
     <Compile Include="BinaryPolynomialMember.cs" />
     <Compile Include="CyclicRedundancyCheckManager.cs" />
     <Compile Include="ICyclicRedundancyCheckManager.cs" />
+    <Compile Include="PolynomialDivisionResult.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\BinaryPolinomialTests.cs" />
