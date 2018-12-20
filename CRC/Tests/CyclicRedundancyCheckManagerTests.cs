@@ -35,17 +35,6 @@ namespace CRC.Tests
             _cyclicRedundancyCheckManager.IsUnchanged(polynomialWithFcs, generatorPolynomial).Should().BeTrue();
         }
 
-        [TestCase(new[] { 1, 0, 1, 1, 0 }, new[] { 1, 0, 1 }, new[] { 1, 0, 0, 1, 0 })]
-        [TestCase(new[] { 1, 0, 1, 1, 0, 1, }, new[] { 1, 0, 1, 0 }, new[] { 1, 0, 0, 1, 0, 0, 1 })]
-        [TestCase(new[] { 1, 0, 1, 0 }, new[] { 1, 1 }, new[] { 1, 1, 0, 0 })]
-
-        public void Divide_ShouldReturnCorrectResult(int[] original, int[] divisor, int[] expected)
-        {
-            var originalBinaryPolinomial = new BinaryPolinomial(original);
-            var divisorBinaryPolinomial = new BinaryPolinomial(divisor);
-            var expectedBinaryPolinomial = new BinaryPolinomial(expected);
-
-            originalBinaryPolinomial.Divide(divisorBinaryPolinomial).Result.Should().BeEquivalentTo(expectedBinaryPolinomial);
-        }
+        
     }
 }
