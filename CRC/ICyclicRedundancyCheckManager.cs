@@ -2,8 +2,8 @@
 {
     interface ICyclicRedundancyCheckManager
     {
-        BinaryPolinomial AppendRedundantBits(BinaryPolinomial originalPolinomial, BinaryPolinomial crcPolynomial);
-        BinaryPolinomial CalculateRedundantBits(BinaryPolinomial originalPolinomial, BinaryPolinomial crcPolynomial);
-        bool IsUnchanged(BinaryPolinomial crcEncodedPolinomial, BinaryPolinomial crcPolynomial);
+        BinaryPolynomial AppendRedundantBits(BinaryPolynomial originalPolynomial, BinaryPolynomial crcPolynomial);
+        BinaryPolynomial CalculateRedundantBits(BinaryPolynomial originalPolynomial, BinaryPolynomial crcPolynomial);
+        bool IsUnchanged(BinaryPolynomial crcEncodedPolynomial, BinaryPolynomial crcPolynomial);
     }
 }

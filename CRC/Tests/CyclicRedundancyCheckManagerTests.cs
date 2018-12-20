@@ -18,9 +18,9 @@ namespace CRC.Tests
         [TestCase(new[] { 1, 1, 1, 1, 0, 1 }, new[] { 1, 0, 1 }, new[] { 1, 1, 1, 1, 0, 1, 0, 1 })]
         public void AppendRedundantBits_ShouldAppendCorrectBits(int[] original, int[] generator, int[] expected)
         {
-            var originalBinaryPolinomial = new BinaryPolinomial(original);
-            var generatorBinaryPolinomial = new BinaryPolinomial(generator);
-            var expectedBinaryPolinomial = new BinaryPolinomial(expected);
+            var originalBinaryPolinomial = new BinaryPolynomial(original);
+            var generatorBinaryPolinomial = new BinaryPolynomial(generator);
+            var expectedBinaryPolinomial = new BinaryPolynomial(expected);
 
             _cyclicRedundancyCheckManager.AppendRedundantBits(originalBinaryPolinomial, generatorBinaryPolinomial)
                 .Should().BeEquivalentTo(expectedBinaryPolinomial);
@@ -30,8 +30,8 @@ namespace CRC.Tests
         [TestCase(new[] { 1, 1, 1, 1, 0, 1 }, new[] { 1, 0, 1 }, new[] { 1, 1, 1, 1, 0, 1, 0, 1 })]
         public void IsUnchanged_WithNoChange_ShouldReturnTrue(int[] original, int[] generator, int[] expected)
         {
-            var generatorPolynomial = new BinaryPolinomial(generator);
-            var polynomialWithFcs = new BinaryPolinomial(expected);
+            var generatorPolynomial = new BinaryPolynomial(generator);
+            var polynomialWithFcs = new BinaryPolynomial(expected);
             _cyclicRedundancyCheckManager.IsUnchanged(polynomialWithFcs, generatorPolynomial).Should().BeTrue();
         }
 

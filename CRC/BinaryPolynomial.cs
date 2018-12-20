@@ -3,31 +3,31 @@ using System.Linq;
 
 namespace CRC
 {
-    public class BinaryPolinomial
+    public class BinaryPolynomial
     {
         public int Degree { get; set; }
         public List<BinaryPolynomialMember> Value { get; set; }
 
 
-        public BinaryPolinomial(params int[] values)
+        public BinaryPolynomial(params int[] values)
         {
             Degree = GetPolynomialDegreeFromArray(values);
             InitializeListFromArray(values);
         }
 
-        public BinaryPolinomial(BinaryPolinomial polynomial)
+        public BinaryPolynomial(BinaryPolynomial polynomial)
         {
             Degree = polynomial.Degree;
             Value = polynomial.Value;
         }
 
-        public void Append(BinaryPolinomial polinomial)
+        public void Append(BinaryPolynomial polynomial)
         {
-            //Move original value |polinomial| times to the left.
-            LeftShift(polinomial.Degree + 1);
+            //Move original value |polynomial| times to the left.
+            LeftShift(polynomial.Degree + 1);
 
             //Append those bits
-            polinomial.Value.ForEach(x => { this.Value.First(y => y.Position == x.Position).Value = x.Value; });
+            polynomial.Value.ForEach(x => { this.Value.First(y => y.Position == x.Position).Value = x.Value; });
         }
 
         public void LeftShift(int steps)
@@ -41,7 +41,7 @@ namespace CRC
             }
         }
 
-        public BinaryPolinomial GetDivisionRemainder(BinaryPolinomial polynomial)
+        public BinaryPolynomial GetDivisionRemainder(BinaryPolynomial polynomial)
         {
             var generatingPolynomial = polynomial.Value.Select(x => x.Value).ToArray();
             var leadingMemberIndex = 0;
@@ -58,75 +58,97 @@ namespace CRC
                 leadingMemberIndex = GetNextLeadingMemberIndex(initialPolynomial);
                 if (leadingMemberIndex == -1)//No more leading 1 => we're done
                 {
-                    return new BinaryPolinomial(0);
+                    return new BinaryPolynomial(0);
                 }
             }
-            return new BinaryPolinomial(TrimHeadingZeros(initialPolynomial));
+            return new BinaryPolynomial(TrimHeadingZeros(initialPolynomial));
         }
 
-        public PolynomialDivisionResult<BinaryPolinomial> Divide(BinaryPolinomial polynomial)
+        public PolynomialDivisionResult<BinaryPolynomial> Divide(BinaryPolynomial divisorPolynomial)
         {
-            var generatingPolynomial = polynomial.Value.Select(x => x.Value).ToArray();
+            var divisor = divisorPolynomial.Value.Select(x => x.Value).ToArray();
             var leadingMemberIndex = 0;
-            var batchSize = polynomial.Degree + 1;
-            var initialPolynomial = this.Value.Select(x => x.Value).ToArray();
-            BinaryPolinomial resultPolynomial = new BinaryPolinomial(1);
-            BinaryPolinomial remainderPolynomial=new BinaryPolinomial();
+            var batchSize = divisorPolynomial.Degree + 1;
+            var dividend = this.Value.Select(x => x.Value).ToArray();
+            BinaryPolynomial resultPolynomial = new BinaryPolynomial(1);
 
-            while (Degree + 1 - leadingMemberIndex >= batchSize)//jos uvik ima bitova
+            while (EnoughBitsRemaining(leadingMemberIndex, batchSize))//jos uvik ima bitova
             {
                 var j = 0;
                 for (var i = leadingMemberIndex; i < leadingMemberIndex + batchSize; i++)
                 {
-                    initialPolynomial[i] = (initialPolynomial[i] + generatingPolynomial[j++]) % 2;//xor vrijednosti
+                    dividend[i] = (dividend[i] + divisor[j++]) % 2; //xor Batch
                 }
 
-                var nextLeadingMemberIndex = GetNextLeadingMemberIndex(initialPolynomial);
-                if (nextLeadingMemberIndex != -1 && Degree+1-nextLeadingMemberIndex>=batchSize)//Ako ima dovoljno ne nula brojeva
+                var nextLeadingMemberIndex = GetNextLeadingMemberIndex(dividend);
+                if (EnoughNonZeroBitsRemaining(nextLeadingMemberIndex, batchSize))//Ako ima dovoljno ne nula brojeva
                 {
                     AppendDivisonResultMember(resultPolynomial, nextLeadingMemberIndex - leadingMemberIndex);
                 }
-                else if (nextLeadingMemberIndex == -1)//No more leading 1 => we're done
+                else if (NoLeadingOnes(nextLeadingMemberIndex))//No more leading 1 => we're done
                 {
-                    AppendDivisionResultTrailingZeros(resultPolynomial, Degree - (leadingMemberIndex + polynomial.Degree));
-                    return new PolynomialDivisionResult<BinaryPolinomial>(resultPolynomial, new BinaryPolinomial(0));
+                    AppendDivisionResultTrailingZeros(resultPolynomial, Degree - (leadingMemberIndex + divisorPolynomial.Degree));
+                    return new PolynomialDivisionResult<BinaryPolynomial>(resultPolynomial, new BinaryPolynomial(0));
                 }
                 else//Not enough numbers => we're done
                 {
-                    AppendDivisionResultTrailingZeros(resultPolynomial, Degree - (leadingMemberIndex + polynomial.Degree));
+                    AppendDivisionResultTrailingZeros(resultPolynomial, Degree - (leadingMemberIndex + divisorPolynomial.Degree));
 
-                    for (var i = nextLeadingMemberIndex; i < initialPolynomial.Length; i++)
-                    {
-                        remainderPolynomial.Append(new BinaryPolinomial(initialPolynomial[i]));
-                    }
+                    var remainingBits = GetRemainingBitsFromDividend(dividend, nextLeadingMemberIndex);
+                    var remainderPolynomial=new BinaryPolynomial(remainingBits);
 
-                    remainderPolynomial.Degree--;
-                    return new PolynomialDivisionResult<BinaryPolinomial>(resultPolynomial, remainderPolynomial);
+                    return new PolynomialDivisionResult<BinaryPolynomial>(resultPolynomial, remainderPolynomial);
                 }
                 leadingMemberIndex = nextLeadingMemberIndex;
             }
             //Dodaj onoliko nula koliko je ostalo do kraja
-            AppendDivisionResultTrailingZeros(resultPolynomial, Degree - (leadingMemberIndex + polynomial.Degree));
-            return new PolynomialDivisionResult<BinaryPolinomial>(resultPolynomial, new BinaryPolinomial(TrimHeadingZeros(initialPolynomial)));
+            AppendDivisionResultTrailingZeros(resultPolynomial, Degree - (leadingMemberIndex + divisorPolynomial.Degree));
+            return new PolynomialDivisionResult<BinaryPolynomial>(resultPolynomial, new BinaryPolynomial(TrimHeadingZeros(dividend)));
         }
 
-        private void AppendDivisionResultTrailingZeros(BinaryPolinomial resultPolynomial, int restOfMembers)
+        private bool NoLeadingOnes(int nextLeadingMemberIndex)
+        {
+            return nextLeadingMemberIndex == -1;
+        }
+
+        private int[] GetRemainingBitsFromDividend(int[] initialPolynomial, int nextLeadingMemberIndex)
+        {
+            var list = new List<int>();
+            for (var i = nextLeadingMemberIndex; i < initialPolynomial.Length; i++)
+            {
+                list.Add(initialPolynomial[i]);
+            }
+
+            return list.ToArray();
+        }
+
+        private bool EnoughNonZeroBitsRemaining(int nextLeadingMemberIndex, int batchSize)
+        {
+            return nextLeadingMemberIndex != -1 && Degree+1-nextLeadingMemberIndex>=batchSize;
+        }
+
+        private bool EnoughBitsRemaining(int leadingMemberIndex, int batchSize)
+        {
+            return Degree + 1 - leadingMemberIndex >= batchSize;
+        }
+
+        private void AppendDivisionResultTrailingZeros(BinaryPolynomial resultPolynomial, int restOfMembers)
         {
             while (restOfMembers > 0)
             {
-                resultPolynomial.Append(new BinaryPolinomial(0));
+                resultPolynomial.Append(new BinaryPolynomial(0));
                 restOfMembers--;
             }
         }
 
-        private void AppendDivisonResultMember(BinaryPolinomial resultPolynomial, int numbersTaken)
+        private void AppendDivisonResultMember(BinaryPolynomial resultPolynomial, int numbersTaken)
         {
             while (numbersTaken > 1)
             {
-                resultPolynomial.Append(new BinaryPolinomial(0));
+                resultPolynomial.Append(new BinaryPolynomial(0));
                 numbersTaken--;
             }
-            resultPolynomial.Append(new BinaryPolinomial(1));
+            resultPolynomial.Append(new BinaryPolynomial(1));
         }
 
         private int[] TrimHeadingZeros(int[] polynomial)
@@ -145,7 +167,6 @@ namespace CRC
 
             return polynomialList.ToArray();
         }
-
 
         private int GetNextLeadingMemberIndex(int[] initialPolynomial)
         {

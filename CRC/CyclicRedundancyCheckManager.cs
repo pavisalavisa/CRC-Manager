@@ -2,10 +2,10 @@
 {
     public class CyclicRedundancyCheckManager : ICyclicRedundancyCheckManager
     {
-        public BinaryPolinomial AppendRedundantBits(BinaryPolinomial originalPolinomial, BinaryPolinomial crcPolynomial)
+        public BinaryPolynomial AppendRedundantBits(BinaryPolynomial originalPolynomial, BinaryPolynomial crcPolynomial)
         {
-            var redundantBits = CalculateRedundantBits(originalPolinomial, crcPolynomial);
-            var polynomialWithFCS = new BinaryPolinomial(originalPolinomial);
+            var redundantBits = CalculateRedundantBits(originalPolynomial, crcPolynomial);
+            var polynomialWithFCS = new BinaryPolynomial(originalPolynomial);
 
             PadWithLeadingZeros(redundantBits, crcPolynomial);
 
@@ -14,7 +14,7 @@
             return polynomialWithFCS;
         }
 
-        private void PadWithLeadingZeros(BinaryPolinomial redundantBits, BinaryPolinomial crcPolynomial)
+        private void PadWithLeadingZeros(BinaryPolynomial redundantBits, BinaryPolynomial crcPolynomial)
         {
             for (var i = redundantBits.Degree; i < crcPolynomial.Degree - 1; i++)
             {
@@ -23,12 +23,12 @@
             }
         }
 
-        public BinaryPolinomial CalculateRedundantBits(BinaryPolinomial originalPolinomial, BinaryPolinomial crcPolynomial)
+        public BinaryPolynomial CalculateRedundantBits(BinaryPolynomial originalPolynomial, BinaryPolynomial crcPolynomial)
         {
-            return originalPolinomial.GetDivisionRemainder(crcPolynomial);
+            return originalPolynomial.GetDivisionRemainder(crcPolynomial);
         }
 
-        public bool IsUnchanged(BinaryPolinomial crcEncodedPolynomial, BinaryPolinomial crcPolynomial)
+        public bool IsUnchanged(BinaryPolynomial crcEncodedPolynomial, BinaryPolynomial crcPolynomial)
         {
             var polynomial = crcEncodedPolynomial.GetDivisionRemainder(crcPolynomial);
 

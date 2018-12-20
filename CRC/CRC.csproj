@@ -55,7 +55,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BinaryPolinomial.cs" />
+    <Compile Include="BinaryPolynomial.cs" />
     <Compile Include="BinaryPolynomialMember.cs" />
     <Compile Include="CyclicRedundancyCheckManager.cs" />
     <Compile Include="ICyclicRedundancyCheckManager.cs" />

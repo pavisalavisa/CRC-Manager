@@ -10,8 +10,8 @@ namespace CRC.Tests
         [Test]
         public void Append_ShouldAppendBits()
         {
-            var originalPolynomial = new BinaryPolinomial(1, 0, 1, 1, 1, 0);
-            var polynomialToAppend = new BinaryPolinomial(1, 0, 1);
+            var originalPolynomial = new BinaryPolynomial(1, 0, 1, 1, 1, 0);
+            var polynomialToAppend = new BinaryPolynomial(1, 0, 1);
             originalPolynomial.Append(polynomialToAppend);
 
         }
@@ -21,7 +21,7 @@ namespace CRC.Tests
         [TestCase(new[] { 1, 1, 0, 1, 1, 0 }, 5)]
         public void BinaryPolynomial_FromParams_ShouldHaveCorrectDegree(int[] polynomialValues, int degree)
         {
-            var polynomial = new BinaryPolinomial(polynomialValues);
+            var polynomial = new BinaryPolynomial(polynomialValues);
 
             polynomial.Degree.Should().Be(degree);
         }
@@ -29,7 +29,7 @@ namespace CRC.Tests
         [TestCase(new[] { 0, 1, 1, 0 })]
         public void BinaryPolynomial_FromParams_ShouldHaveUniqueItems(int[] polynomialValues)
         {
-            var polynomial = new BinaryPolinomial(polynomialValues);
+            var polynomial = new BinaryPolynomial(polynomialValues);
 
             polynomial.Value.Should().OnlyHaveUniqueItems();
         }
@@ -37,7 +37,7 @@ namespace CRC.Tests
         [TestCase(new[] { 0, 1, 1, 0 })]
         public void BinaryPolynomial_FromParams_ShouldItemsInDescendingOrder(int[] polynomialValues)
         {
-            var polynomial = new BinaryPolinomial(polynomialValues);
+            var polynomial = new BinaryPolynomial(polynomialValues);
 
             polynomial.Value.Should().BeInDescendingOrder();
         }
@@ -45,7 +45,7 @@ namespace CRC.Tests
         [TestCase(new[] { 0, 1, 1, 0 })]
         public void BinaryPolynomialFromParams_ShouldHaveCorrectValues(int[] polynomialValues)
         {
-            var polynomial = new BinaryPolinomial(polynomialValues);
+            var polynomial = new BinaryPolynomial(polynomialValues);
             var expectedPolynomial = new List<BinaryPolynomialMember>()
             {
                 new BinaryPolynomialMember(3, 0),
@@ -62,7 +62,7 @@ namespace CRC.Tests
         [TestCase(0)]
         public void LeftShift_ShouldIncreaseDegree(int steps)
         {
-            var originalPolynomial = new BinaryPolinomial(1, 0, 1, 1);
+            var originalPolynomial = new BinaryPolynomial(1, 0, 1, 1);
             originalPolynomial.LeftShift(steps);
 
             originalPolynomial.Degree.Should().Be(3 + steps);
@@ -71,8 +71,8 @@ namespace CRC.Tests
         [Test]
         public void LeftShift_ShouldMoveBits()
         {
-            var originalPolynomial = new BinaryPolinomial(1, 0, 1, 1);
-            var expectedPolynomial = new BinaryPolinomial(1, 0, 1, 1, 0, 0);
+            var originalPolynomial = new BinaryPolynomial(1, 0, 1, 1);
+            var expectedPolynomial = new BinaryPolynomial(1, 0, 1, 1, 0, 0);
             originalPolynomial.LeftShift(2);
 
             originalPolynomial.Should().BeEquivalentTo(expectedPolynomial);
@@ -83,8 +83,8 @@ namespace CRC.Tests
         [TestCase(new[] { 1 }, 4)]
         public void Append_ShouldIncreaseDegree(int[] polynomialToAppendValues, int expectedDegree)
         {
-            var originalPolynomial = new BinaryPolinomial(1, 0, 1, 1);
-            var polynomialToAppend = new BinaryPolinomial(polynomialToAppendValues);
+            var originalPolynomial = new BinaryPolynomial(1, 0, 1, 1);
+            var polynomialToAppend = new BinaryPolynomial(polynomialToAppendValues);
 
             originalPolynomial.Append(polynomialToAppend);
 
@@ -96,9 +96,9 @@ namespace CRC.Tests
         [TestCase(new[] { 0, 1 }, new[] { 1, 0, 1, 0, 1 })]
         public void Append_ShouldAppendPolynomial(int[] polynomialToAppendValues, int[] expectedPolynomialValues)
         {
-            var originalPolynomial = new BinaryPolinomial(1, 0, 1, 1);
-            var polynomialToAppend = new BinaryPolinomial(polynomialToAppendValues);
-            var expectedPolynomial = new BinaryPolinomial(expectedPolynomialValues);
+            var originalPolynomial = new BinaryPolynomial(1, 0, 1, 1);
+            var polynomialToAppend = new BinaryPolynomial(polynomialToAppendValues);
+            var expectedPolynomial = new BinaryPolynomial(expectedPolynomialValues);
 
             originalPolynomial.Append(polynomialToAppend);
 
@@ -112,18 +112,18 @@ namespace CRC.Tests
 
         public void GetDivisionRemainder_ShouldReturnCorrectRemainder(int[] divisor, int[] expected)
         {
-            var originalPolynomial = new BinaryPolinomial(1, 0, 1, 1, 1, 1, 0, 0);
-            var divisorPolynomial = new BinaryPolinomial(divisor);
-            var expectedPolynomial = new BinaryPolinomial(expected);
+            var originalPolynomial = new BinaryPolynomial(1, 0, 1, 1, 1, 1, 0, 0);
+            var divisorPolynomial = new BinaryPolynomial(divisor);
+            var expectedPolynomial = new BinaryPolynomial(expected);
             originalPolynomial.GetDivisionRemainder(divisorPolynomial).Should().BeEquivalentTo(expectedPolynomial);
         }
 
         [TestCase(new[] { 1, 0, 1, 1, 0, 0, 0 }, new[] { 1, 1, 0 }, new[] { 1, 0 })]
         public void GetDivisionRemainder_ShouldReturnCorrectRemainder(int[] original, int[] divisor, int[] expected)
         {
-            var originalPolynomial = new BinaryPolinomial(original);
-            var divisorPolynomial = new BinaryPolinomial(divisor);
-            var expectedPolynomial = new BinaryPolinomial(expected);
+            var originalPolynomial = new BinaryPolynomial(original);
+            var divisorPolynomial = new BinaryPolynomial(divisor);
+            var expectedPolynomial = new BinaryPolynomial(expected);
             originalPolynomial.GetDivisionRemainder(divisorPolynomial).Should().BeEquivalentTo(expectedPolynomial);
         }
 
@@ -134,9 +134,9 @@ namespace CRC.Tests
 
         public void Divide_ShouldReturnCorrectResult(int[] original, int[] divisor, int[] expected)
         {
-            var originalBinaryPolinomial = new BinaryPolinomial(original);
-            var divisorBinaryPolinomial = new BinaryPolinomial(divisor);
-            var expectedBinaryPolinomial = new BinaryPolinomial(expected);
+            var originalBinaryPolinomial = new BinaryPolynomial(original);
+            var divisorBinaryPolinomial = new BinaryPolynomial(divisor);
+            var expectedBinaryPolinomial = new BinaryPolynomial(expected);
 
             originalBinaryPolinomial.Divide(divisorBinaryPolinomial).Result.Should().BeEquivalentTo(expectedBinaryPolinomial);
         }
@@ -147,9 +147,9 @@ namespace CRC.Tests
         [TestCase(new[] { 1, 0, 1, 1, 0, 0, 0 }, new[] { 1, 1, 0 }, new[] { 1, 0 })]
         public void Divide_shouldReturnCorrectRemainder(int[] original, int[] divisor, int[] expected)
         {
-            var originalBinaryPolinomial = new BinaryPolinomial(original);
-            var divisorBinaryPolinomial = new BinaryPolinomial(divisor);
-            var expectedBinaryPolinomial = new BinaryPolinomial(expected);
+            var originalBinaryPolinomial = new BinaryPolynomial(original);
+            var divisorBinaryPolinomial = new BinaryPolynomial(divisor);
+            var expectedBinaryPolinomial = new BinaryPolynomial(expected);
 
             originalBinaryPolinomial.Divide(divisorBinaryPolinomial).Remainder.Should().BeEquivalentTo(expectedBinaryPolinomial);
         }
